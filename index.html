@@ -90,33 +90,46 @@ function takePhoto() {
 
 // SUBMIT
 async function submitData() {
-  if (!photoTaken) {
-    alert("Ambil foto dulu");
-    return;
+  console.log("SUBMIT DIKLIK");
+
+  try {
+    if (!photoTaken) {
+      alert("Ambil foto dulu");
+      return;
+    }
+
+    if (!locationData) {
+      alert("Ambil lokasi dulu");
+      return;
+    }
+
+    const data = {
+      nrp: document.getElementById("nrp").value,
+      name: document.getElementById("name").value,
+      status: "Present",
+      latitude: locationData.lat,
+      longitude: locationData.lng,
+      mapUrl: locationData.mapUrl,
+      timestamp: new Date().toISOString(),
+      photo: document.getElementById("canvas").toDataURL()
+    };
+
+    console.log("DATA:", data);
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain"
+      },
+      body: JSON.stringify(data)
+    });
+
+    console.log("RESPONSE:", res);
+
+    document.getElementById("msg").innerText = "Berhasil!";
+  } catch (err) {
+    console.error("ERROR:", err);
+    alert("Error: " + err.message);
   }
-
-  const data = {
-    nrp: document.getElementById("nrp").value,
-    name: document.getElementById("name").value,
-    status: "Present",
-    latitude: locationData.lat,
-    longitude: locationData.lng,
-    mapUrl: locationData.mapUrl,
-    timestamp: new Date().toISOString(),
-    photo: document.getElementById("canvas").toDataURL()
-  };
-
-  await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "text/plain"
-    },
-    body: JSON.stringify(data)
-  });
-
-  document.getElementById("msg").innerText = "Berhasil!";
 }
-</script>
-
-</body>
 </html>
